@@ -13,23 +13,27 @@ intents.members = True
 
 client = commands.Bot(command_prefix=".",intents=intents)
 
-@client.event
-async def on_message(message):
-    if message.content == "testing":
-        await message.channel.send("hello")
-    await client.process_commands(message)
 
 @client.command()
 async def kick(ctx, member: discord.Member, *, reason=None):
     await member.kick(reason=reason)
-    embed=discord.Embed(title=f'{member} has been kicked', description=f'Reason={reason}', color=15158332)
+    embed=discord.Embed(title=f'{member.username} has been kicked', color=15158332)
+    embed.add_field(name="Reason",value=reason)
     await ctx.send(embed=embed)
 
 @client.command()
 async def ban(ctx, member: discord.Member, *, reason=None):
     await member.ban(reason=reason)
-    embed=discord.Embed(title=f'{member} has been banned', description=f'Reason={reason}', color=15158332)
+    embed=discord.Embed(title=f'{member.username} has been banned', color=15158332)
+    embed.add_field(name="Reason",value=reason)
     await ctx.send(embed=embed)
+
+@client.event
+async def on_message(message):
+    if message.content == "testing":
+        await message.channel.send("hello")
+    else
+        await client.process_commands(message)
 
 # run bot      
 client.run(TOKEN)
