@@ -14,9 +14,16 @@ client = commands.Bot(command_prefix=".",intents=intents)
 
 @client.event
 async def on_message(message):
-    print("aaaaaaaaaa")
-    print(message.content)
     if message.content == "testing":
-        print("hi")
         await message.channel.send("hello")
+    await client.process_commands(message)
+
+@client.command()
+async def kick(ctx, member: discord.Member, *, reason=None):
+    print("begin")
+    print("AAAA")
+    await member.kick(reason=reason)
+    await ctx.send(f'{member} has been kicked')
+
+# run bot      
 client.run(TOKEN)
