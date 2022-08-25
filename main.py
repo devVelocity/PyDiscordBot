@@ -20,10 +20,13 @@ async def on_message(message):
 
 @client.command()
 async def kick(ctx, member: discord.Member, *, reason=None):
-    print("begin")
-    print("AAAA")
     await member.kick(reason=reason)
-    await ctx.send(f'{member} has been kicked')
+    await ctx.send(f'{member} has been kicked. Reason={reason}')
+
+@client.command()
+async def ban(ctx, member: discord.Member, *, reason=None):
+    await member.ban(reason=reason)
+    await ctx.send(f'{member} has been banned. Reason={reason}')
 
 # run bot      
 client.run(TOKEN)
