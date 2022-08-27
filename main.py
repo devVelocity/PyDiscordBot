@@ -47,19 +47,44 @@ async def addbanword(ctx, word):
                 await ctx.send(embed=embed)
             return
 
+@client.command()
+async def removebanword(ctx, word):
+    jsonstore = open("bannedwords.json")
+    f = json.load(jsonstore)
+    # print(f)
+    foundguild = False
+    for item in f:
+        # print(item)
+        if item.get("guildID") == ctx.guild.id:
+            # print("found")
+            foundguild == True
+            newarray = []
+            for checkword in item.get("words"):
+                if checkword != word:
+                    newarray.append(checkword)
+
+            item.get("words") == newarray
+            with open('bannedwords.json','w') as out_file:
+                json.dump(f,out_file,indent=4)
+                embed=discord.Embed(title=f'{word} has been unbanned', color=3066993)
+                await ctx.send(embed=embed)
+            return
+
+
+
 
 @client.command()
 async def setup(ctx):
     jsonstore = open("bannedwords.json")
     f = json.load(jsonstore)
-    print(f)
+    # print(f)
     foundguild = False
     for item in f:
-        if hasattr(item, "guildID"):
-            if item.get("guildID") == ctx.guild.id:
-                print("found")
-                foundguild == True 
-                return
+        if item.get("guildID") == ctx.guild.id:
+            foundguild == True 
+            embed=discord.Embed(title='Bot has already been previously setup!', color=3066993)
+            await ctx.send(embed=embed)
+            return
 
     if foundguild == False:
         try:
@@ -92,11 +117,14 @@ async def on_message(message):
     for item in f:
         if item.get("guildID") == ctx.guild.id:
             for word in item.get("words"):
-                print(word)
-                print(ctx.message.content)
+                # print(word)
+                # print(ctx.message.content)
                 if ctx.message.content.find(word) != -1:
                     await ctx.message.delete()
-                    await ctx.send(f"Warning {ctx.message.author.mention}! You are not allowed to say that word in this server")
+                    embed = discord.Embed(title="Warning!",color=15158332)
+                    embed.add_field(name="You are not allowed to say that word in this server")
+                    await ctx.send(ctx.message.author.mention,embed=embed)
+                    await ctx.message.delete()
             return
 
 # run bot      
