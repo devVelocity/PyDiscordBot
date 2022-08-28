@@ -118,6 +118,25 @@ async def setup(ctx):
             return
 
 
+@client.command()
+async def checkbannedwords(ctx):
+    jsonstore = open("guilddata.json")
+    f = json.load(jsonstore)
+    embed=discord.Embed(title=f'Banned words in Server "{ctx.guild.name}"', color=16776960)
+    for item in f:
+        if item.get("guildID") == ctx.guild.id:
+            if len(item.get("words")) == 0:
+                embed.color = 15158332
+                embed.add_field(name=f"Error",value="There are no banned words in this server")
+            else:
+                for word in item.get("words"):
+                    embed.add_field(name="⠀",value=f"{word}")
+    
+    await ctx.message.delete()
+    await ctx.send(ctx.message.author.mention, embed=embed)
+
+
+
 def contains_word(text, word):
     return bool(re.search(r'\b' + re.escape(word) + r'\b', text))
 
