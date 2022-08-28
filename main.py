@@ -37,8 +37,7 @@ async def addbanword(ctx, word):
     f = json.load(jsonstore)
     print(f)
     foundguild = False
-        for item in f:
-        print(item)
+    for item in f:
         if item.get("guildID") == ctx.guild.id:
             print("found")
             foundguild == True 
