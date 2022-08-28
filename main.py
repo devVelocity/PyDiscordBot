@@ -94,8 +94,8 @@ async def setup(ctx):
         if item.get("guildID") == ctx.guild.id:
             foundguild == True 
             embed=discord.Embed(title='Bot has already been previously setup!', color=3066993)
-            embed.add_field(name="Tip!",value="Run 'setLogsChannel' with a Channel ID to set a Channel for Message Logs.")
-            embed.add_field(name="Tip!",value="Run 'addModerator' with a User ID to add a Moderator.")
+            embed.add_field(name="Additional Tip:",value="Run 'setLogsChannel' with a Channel ID to set a Channel for Message Logs.")
+            embed.add_field(name="Additional Tip:",value="Run 'addModerator' with a User ID to add a Moderator.")
             await ctx.send(ctx.message.author.mention,embed=embed)
             return
 
@@ -103,6 +103,8 @@ async def setup(ctx):
         try:
             with open('guilddata.json','w') as out_file:
                 f.append({"guildID":ctx.guild.id,"words":[],"mods":[],"logsChannel":0})
+                embed.add_field(name="Additional Tip:",value="Run 'setLogsChannel' with a Channel ID to set a Channel for Message Logs.")
+                embed.add_field(name="Additional Tip:",value="Run 'addModerator' with a User ID to add a Moderator.")
                 json.dump(f,out_file,indent=4)
                 embed=discord.Embed(title='Bot has been setup!', color=3066993)
                 await ctx.send(embed=embed,delete_after=10)
