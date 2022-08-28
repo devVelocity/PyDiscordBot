@@ -58,12 +58,16 @@ async def removebanword(ctx, word):
         if item.get("guildID") == ctx.guild.id:
             # print("found")
             foundguild == True
+            foundword = False
             newarray = []
             for checkword in item.get("words"):
                 if checkword != word:
                     newarray.append(checkword)
 
-            item.get("words") == newarray
+            item.get("words").pop()
+            item["words"] = newarray
+
+
             with open('bannedwords.json','w') as out_file:
                 json.dump(f,out_file,indent=4)
                 embed=discord.Embed(title=f'{word} has been unbanned', color=3066993)
@@ -120,13 +124,17 @@ async def on_message(message):
                 # print(word)
                 # print(ctx.message.content)
                 if ctx.message.content.find(word) != -1:
-                    await ctx.message.delete()
-                    embed = discord.Embed(title="Warning!",color=15158332)
-                    embed.add_field(name="You are not allowed to say that word in this server")
-                    await ctx.send(ctx.message.author.mention,embed=embed)
-                    await ctx.message.delete()
-            return
+                    print(ctx.message.content)
+                    if ctx.message.content.find("removebanword") != 1:
+                        embed = discord.Embed(title="Warning!",description="You are not allowed to say that word in this server",color=15158332)
+                        await ctx.send(ctx.message.author.mention,embed=embed)
+                        await ctx.message.delete()
+                    else:
+                        await client.process_commands(message)
+                        return
 
+            return
+    await client.process_commands(message)
 # run bot      
 client.run(TOKEN)
 
