@@ -124,13 +124,12 @@ async def on_message(message):
                 # print(word)
                 # print(ctx.message.content)
                 if ctx.message.content.find(word) != -1:
-                    print(ctx.message.content)
-                    if ctx.message.content.find("removebanword") != 1 or ctx.message.content.find("addbanword") != 1:
+                    # print(ctx.message.content)
+                    if ctx.message.content.find("removebanword") != 1 and ctx.message.content.find("addbanword") != 1:
                         embed = discord.Embed(title="Warning!",description="You are not allowed to say that word in this server",color=15158332)
                         await ctx.send(ctx.message.author.mention,embed=embed)
                         await ctx.message.delete()
                     else:
-                        await client.process_commands(message)
                         return
 
             return
