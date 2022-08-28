@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import json
+import re
 
 import os
 
@@ -117,6 +118,8 @@ async def setup(ctx):
             return
 
 
+def contains_word(text, word):
+    return bool(re.search(r'\b' + re.escape(word) + r'\b', text))
 
 @client.event
 async def on_message(message):
@@ -134,14 +137,16 @@ async def on_message(message):
             for word in item.get("words"):
                 # print(word)
                 # print(ctx.message.content)
-                if ctx.message.content.find(" " + word + " ") != -1:
-                    # print(ctx.message.content)
-                    if ctx.message.content.find("removebanword") != 1 and ctx.message.content.find("addbanword") != 1:
-                        await ctx.message.delete()
-                        embed = discord.Embed(title="Warning!",description="You are not allowed to say that word in this server.",color=15158332)
-                        await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
-                    else:
-                        return
+                if ctx.message.content.find(word) != -1:
+                    print("through")
+                    if contains_word(ctx.message.content, word):
+                        # print(ctx.message.content)
+                        if ctx.message.content.find("removebanword") != 1 and ctx.message.content.find("addbanword") != 1:
+                            await ctx.message.delete()
+                            embed = discord.Embed(title="Warning!",description="You are not allowed to say that word in this server.",color=15158332)
+                            await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+                        else:
+                            return
 
             return
     await client.process_commands(message)
