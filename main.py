@@ -37,7 +37,7 @@ async def addbanword(ctx, word):
     f = json.load(jsonstore)
     print(f)
     foundguild = False
-    for item in f:
+        for item in f:
         print(item)
         if item.get("guildID") == ctx.guild.id:
             print("found")
@@ -45,7 +45,8 @@ async def addbanword(ctx, word):
             item.get("words").append(word)
             with open('guilddata.json','w') as out_file:
                 json.dump(f,out_file,indent=4)
-                embed=discord.Embed(title=f'"{word}" has been banned', color=3066993)
+                await ctx.message.delete()
+                embed=discord.Embed(title=f'"{word}" has been added to the word banlist.', color=3066993)
                 # embed.add_field(name="Command ran by:",value=ctx.message.author)
                 await ctx.send(ctx.message.author.mention,embed=embed)
             return
@@ -75,7 +76,8 @@ async def removebanword(ctx, word):
 
             with open('guilddata.json','w') as out_file:
                 json.dump(f,out_file,indent=4)
-                embed=discord.Embed(title=f'"{word}" has been unbanned', color=3066993)
+                await ctx.message.delete()
+                embed=discord.Embed(title=f'"{word}" has been removed from the word banlist', color=3066993)
                 # embed.add_field(name="Command ran by:",value=ctx.message.author)
                 await ctx.send(ctx.message.author.mention,embed=embed)
             return
@@ -93,7 +95,8 @@ async def setup(ctx):
         if item.get("guildID") == ctx.guild.id:
             foundguild == True 
             embed=discord.Embed(title='Bot has already been previously setup!', color=3066993)
-            embed.add_field(name="Tip!",value="Run 'setLogsChannel' with a channel ID to set a channel for message logs")
+            embed.add_field(name="Tip!",value="Run 'setLogsChannel' with a Channel ID to set a Channel for Message Logs.")
+            embed.add_field(name="Tip!",value="Run 'addModerator' with a User ID to add a Moderator.")
             await ctx.send(ctx.message.author.mention,embed=embed)
             return
 
@@ -133,9 +136,9 @@ async def on_message(message):
                 if ctx.message.content.find(word) != -1:
                     # print(ctx.message.content)
                     if ctx.message.content.find("removebanword") != 1 and ctx.message.content.find("addbanword") != 1:
-                        embed = discord.Embed(title="Warning!",description="You are not allowed to say that word in this server",color=15158332)
-                        await ctx.send(ctx.message.author.mention,embed=embed)
                         await ctx.message.delete()
+                        embed = discord.Embed(title="Warning!",description="You are not allowed to say that word in this server.",color=15158332)
+                        await ctx.send(ctx.message.author.mention,embed=embed)
                     else:
                         return
 
