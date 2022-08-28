@@ -20,6 +20,7 @@ async def kick(ctx, member: discord.Member, *, reason=None):
     await member.kick(reason=reason)
     embed=discord.Embed(title=f'{member} has been kicked', color=15158332)
     embed.add_field(name="Reason",value=reason)
+    embed.add_field(name="Command ran by:",value=ctx.message.author)
     await ctx.send(embed=embed)
 
 @client.command()
@@ -27,11 +28,12 @@ async def ban(ctx, member: discord.Member, *, reason=None):
     await member.ban(reason=reason)
     embed=discord.Embed(title=f'{member} has been banned', color=15158332)
     embed.add_field(name="Reason",value=reason)
+    embed.add_field(name="Command ran by:",value=ctx.message.author)
     await ctx.send(embed=embed)
 
 @client.command()
 async def addbanword(ctx, word):
-    jsonstore = open("bannedwords.json")
+    jsonstore = open("guilddata.json")
     f = json.load(jsonstore)
     print(f)
     foundguild = False
@@ -41,15 +43,18 @@ async def addbanword(ctx, word):
             print("found")
             foundguild == True 
             item.get("words").append(word)
-            with open('bannedwords.json','w') as out_file:
+            with open('guilddata.json','w') as out_file:
                 json.dump(f,out_file,indent=4)
-                embed=discord.Embed(title=f'{word} has been banned', color=3066993)
-                await ctx.send(embed=embed)
+                embed=discord.Embed(title=f'The Word "{word}" has been banned', color=3066993)
+                embed.add_field(name="Command ran by:",value=ctx.message.author)
+                await ctx.send(ctx.message.author.mention,embed=embed)
             return
+    
+    ctx.message.delete()
 
 @client.command()
 async def removebanword(ctx, word):
-    jsonstore = open("bannedwords.json")
+    jsonstore = open("guilddata.json")
     f = json.load(jsonstore)
     # print(f)
     foundguild = False
@@ -68,18 +73,19 @@ async def removebanword(ctx, word):
             item["words"] = newarray
 
 
-            with open('bannedwords.json','w') as out_file:
+            with open('guilddata.json','w') as out_file:
                 json.dump(f,out_file,indent=4)
-                embed=discord.Embed(title=f'{word} has been unbanned', color=3066993)
-                await ctx.send(embed=embed)
+                embed=discord.Embed(title=f'The Word "{word}" has been unbanned', color=3066993)
+                embed.add_field(name="Command ran by:",value=ctx.message.author)
+                await ctx.send(ctx.message.author.mention,embed=embed)
             return
-
+    ctx.message.delete()
 
 
 
 @client.command()
 async def setup(ctx):
-    jsonstore = open("bannedwords.json")
+    jsonstore = open("guilddata.json")
     f = json.load(jsonstore)
     # print(f)
     foundguild = False
@@ -87,12 +93,12 @@ async def setup(ctx):
         if item.get("guildID") == ctx.guild.id:
             foundguild == True 
             embed=discord.Embed(title='Bot has already been previously setup!', color=3066993)
-            await ctx.send(embed=embed)
+            await ctx.send(ctx.message.author.mention,embed=embed)
             return
 
     if foundguild == False:
         try:
-            with open('bannedwords.json','w') as out_file:
+            with open('guilddata.json','w') as out_file:
                 f.append({"guildID":ctx.guild.id,"words":[]})
                 json.dump(f,out_file,indent=4)
                 embed=discord.Embed(title='Bot has been setup!', color=3066993)
@@ -115,7 +121,7 @@ async def on_message(message):
     else:
         await client.process_commands(message)
 
-    jsonstore = open("bannedwords.json")
+    jsonstore = open("guilddata.json")
     f = json.load(jsonstore)
     foundguild = False
     for item in f:
