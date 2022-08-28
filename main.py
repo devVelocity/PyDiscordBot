@@ -134,7 +134,7 @@ async def on_message(message):
             for word in item.get("words"):
                 # print(word)
                 # print(ctx.message.content)
-                if ctx.message.content.find(word) != -1:
+                if ctx.message.content.find(" " + word + " ") != -1:
                     # print(ctx.message.content)
                     if ctx.message.content.find("removebanword") != 1 and ctx.message.content.find("addbanword") != 1:
                         await ctx.message.delete()
