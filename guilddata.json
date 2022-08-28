@@ -4,15 +4,13 @@
         "words": [
             "oat"
         ],
-        "mods": [],
-        "logsChannel": 0
+        "mods":[],
+        "logsChannel":0
     },
     {
         "guildID": 958485712951468072,
-        "words": [
-            "class319"
-        ],
-        "mods": [],
-        "logsChannel": 0
+        "words": [],
+        "mods":[],
+        "logsChannel":0
     }
 ]

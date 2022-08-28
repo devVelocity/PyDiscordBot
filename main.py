@@ -48,7 +48,7 @@ async def addbanword(ctx, word):
                 await ctx.message.delete()
                 embed=discord.Embed(title=f'"{word}" has been added to the word banlist.', color=3066993)
                 # embed.add_field(name="Command ran by:",value=ctx.message.author)
-                await ctx.send(ctx.message.author.mention,embed=embed)
+                await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
             return
     
     ctx.message.delete()
@@ -79,7 +79,7 @@ async def removebanword(ctx, word):
                 await ctx.message.delete()
                 embed=discord.Embed(title=f'"{word}" has been removed from the word banlist', color=3066993)
                 # embed.add_field(name="Command ran by:",value=ctx.message.author)
-                await ctx.send(ctx.message.author.mention,embed=embed)
+                await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
             return
     ctx.message.delete()
 
@@ -106,12 +106,12 @@ async def setup(ctx):
                 f.append({"guildID":ctx.guild.id,"words":[],"mods":[],"logsChannel":0})
                 json.dump(f,out_file,indent=4)
                 embed=discord.Embed(title='Bot has been setup!', color=3066993)
-                await ctx.send(embed=embed)
+                await ctx.send(embed=embed,delete_after=10)
                 return
         except:
             embed = discord.Embed(title="Error",color=15158332)
             embed.add_field(name="An Error Occurred")
-            await ctx.send(ctx.message.author.mention,embed=embed)
+            await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
             await ctx.message.delete()
             return
 
