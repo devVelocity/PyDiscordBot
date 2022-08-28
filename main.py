@@ -34,6 +34,13 @@ async def ban(ctx, member: discord.Member, *, reason=None):
     await ctx.send(embed=embed)
 
 @client.command()
+async def nickname(ctx, member: discord.member, nickname):
+    await member.edit(nick=nickname)
+    embed=discord.Embed(title=f"{member}'s nickname has been changed", color=15158332)
+    embed.add_field(name="Command ran by:",value=ctx.message.author)
+    await ctx.send(ctx.message.author.mention,embed=embed,delete_after=5)
+
+@client.command()
 async def addbanword(ctx, word):
     jsonstore = open("guilddata.json")
     f = json.load(jsonstore)
