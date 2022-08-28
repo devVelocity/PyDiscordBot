@@ -45,8 +45,8 @@ async def addbanword(ctx, word):
             item.get("words").append(word)
             with open('guilddata.json','w') as out_file:
                 json.dump(f,out_file,indent=4)
-                embed=discord.Embed(title=f'The Word "{word}" has been banned', color=3066993)
-                embed.add_field(name="Command ran by:",value=ctx.message.author)
+                embed=discord.Embed(title=f'"{word}" has been banned', color=3066993)
+                # embed.add_field(name="Command ran by:",value=ctx.message.author)
                 await ctx.send(ctx.message.author.mention,embed=embed)
             return
     
@@ -75,8 +75,8 @@ async def removebanword(ctx, word):
 
             with open('guilddata.json','w') as out_file:
                 json.dump(f,out_file,indent=4)
-                embed=discord.Embed(title=f'The Word "{word}" has been unbanned', color=3066993)
-                embed.add_field(name="Command ran by:",value=ctx.message.author)
+                embed=discord.Embed(title=f'"{word}" has been unbanned', color=3066993)
+                # embed.add_field(name="Command ran by:",value=ctx.message.author)
                 await ctx.send(ctx.message.author.mention,embed=embed)
             return
     ctx.message.delete()
@@ -93,13 +93,14 @@ async def setup(ctx):
         if item.get("guildID") == ctx.guild.id:
             foundguild == True 
             embed=discord.Embed(title='Bot has already been previously setup!', color=3066993)
+            embed.add_field(name="Tip!",value="Run 'setLogsChannel' with a channel ID to set a channel for message logs")
             await ctx.send(ctx.message.author.mention,embed=embed)
             return
 
     if foundguild == False:
         try:
             with open('guilddata.json','w') as out_file:
-                f.append({"guildID":ctx.guild.id,"words":[]})
+                f.append({"guildID":ctx.guild.id,"words":[],"mods":[],"logsChannel":0})
                 json.dump(f,out_file,indent=4)
                 embed=discord.Embed(title='Bot has been setup!', color=3066993)
                 await ctx.send(embed=embed)
