@@ -45,10 +45,10 @@ async def mod(ctx, member: discord.Member, *, reason=None):
         originalmsg = await ctx.send(embed=embed,view=view)
 
         async def kick_callback(interaction):
-            button1.style=discord.ButtonStyle.gray
-            button2.style=discord.ButtonStyle.gray
-            button3.style=discord.ButtonStyle.gray
             try:
+                button1.style=discord.ButtonStyle.gray
+                button2.style=discord.ButtonStyle.gray
+                button3.style=discord.ButtonStyle.gray
                 if interaction.user.id == ctx.message.author.id:
                     await member.kick(reason=reason)
                     kickembed=discord.Embed(title=f'{member} has been kicked', color=16776960)
@@ -64,10 +64,10 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                 await originalmsg.delete()
 
         async def ban_callback(interaction):
-            button1.style=discord.ButtonStyle.gray
-            button2.style=discord.ButtonStyle.gray
-            button3.style=discord.ButtonStyle.gray
             try:
+                button1.style=discord.ButtonStyle.gray
+                button2.style=discord.ButtonStyle.gray
+                button3.style=discord.ButtonStyle.gray
                 if interaction.user.id == ctx.message.author.id:
                     await member.ban(reason=reason)
                     banembed=discord.Embed(title=f'{member} has been banned', color=16776960)
@@ -83,11 +83,12 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                 await originalmsg.delete()
 
         async def timeout_callback(interaction):
-            button1.style=discord.ButtonStyle.gray
-            button2.style=discord.ButtonStyle.gray
-            button3.style=discord.ButtonStyle.gray
+            
             
             try:
+                button1.style=discord.ButtonStyle.gray
+                button2.style=discord.ButtonStyle.gray
+                button3.style=discord.ButtonStyle.gray
                 if interaction.user.id == ctx.message.author.id:
 
                     
@@ -103,9 +104,10 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                     sendselect = await ctx.send(ctx.message.author.mention,embed=timeoutembed,view=newview)
 
                     async def cancel_callback(interaction):
-                        await sendselect.delete()
-                        embed = discord.Embed(title="Timeout Cancelled",color=15158332)
-                        await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+                        if interaction.user.id == ctx.message.author.id:
+                            await sendselect.delete()
+                            embed = discord.Embed(title="Timeout Cancelled",color=15158332)
+                            await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
 
                     cancelButton.callback = cancel_callback
 
