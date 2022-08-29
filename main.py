@@ -146,6 +146,36 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                 await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 day","ranby":ctx.message.author,"reason":reason})
                             elif select.values[0] == 'Custom':
                                 print("non functional")
+                                await sendselect.delete()
+                                embed = discord.Embed(title="Input the amount of time (minutes,hours,days). Up until a maximum of 28 days",color=16776960)
+                            
+                                timeSpecify = await ctx.message.channel.send(embed=embed)
+                                def check(m):
+                                    return m.content and m.channel == ctx.message.channel and m.author == ctx.message.author
+                                msg = await client.wait_for('message',check=check)
+                                msgsplit = msg.content.split(",")
+                                minutes = 0
+                                hours = 0
+                                days = 0
+                                if msgsplit[0]:
+                                    minutes = int(msgsplit[0])
+                                if msgsplit[1]:
+                                    hours = int(msgsplit[1])
+                                if msgsplit[2]:
+                                    days = int(msgsplit[2])
+
+                                delta = timedelta(
+                                    minutes=minutes,
+                                    hours=hours,
+                                    days=days
+                                )
+                                await timeSpecify.delete()
+                                embed = discord.Embed(title=f"{member} has been timed out for {msgsplit[0]}m, {msgsplit[1]}h and {msgsplit[2]}d",color=3066993)
+                                embed.add_field(name="Reason",value=reason)
+                                await msg.delete()
+                                await ctx.send(ctx.message.author.mention, embed=embed)
+                                await member.timeout(delta, reason=reason)
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for {msgsplit[0]}m, {msgsplit[1]}h and {msgsplit[2]}d","ranby":ctx.message.author,"reason":reason})
                         except:
                             await sendselect.delete()
                             await ctx.message.delete()
