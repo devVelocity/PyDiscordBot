@@ -19,6 +19,7 @@ client = commands.Bot(command_prefix=".",intents=intents)
 
 @client.command()
 async def mod(ctx, member: discord.Member, *, reason=None):
+    await ctx.message.delete()
     embed = discord.Embed(title=f"Moderator Controls for User: {member}",color=16776960)
     button1 = Button(label="Kick",style=discord.ButtonStyle.blurple)
     button2 = Button(label="Ban",style=discord.ButtonStyle.blurple)
@@ -30,81 +31,88 @@ async def mod(ctx, member: discord.Member, *, reason=None):
     originalmsg = await ctx.send(embed=embed,view=view)
 
     async def kick_callback(interaction):
-        await member.kick(reason=reason)
-        kickembed=discord.Embed(title=f'{member} has been kicked', color=15158332)
-        kickembed.add_field(name="Reason",value=reason)
-        kickembed.add_field(name="Command ran by:",value=ctx.message.author)
-        await ctx.send(ctx.message.author.mention,embed=kickembed)
-        await ctx.message.delete()
-        await originalmsg.delete()
+        if interaction.user.id == ctx.message.author.id:
+            await member.kick(reason=reason)
+            kickembed=discord.Embed(title=f'{member} has been kicked', color=16776960)
+            kickembed.add_field(name="Reason",value=reason)
+            kickembed.add_field(name="Command ran by:",value=ctx.message.author)
+            await ctx.send(ctx.message.author.mention,embed=kickembed)
+            await ctx.message.delete()
+            await originalmsg.delete()
+        else:
+            await interaction.response.send_message("Sorry, you do not have access to this command",ephemeral=True,delete_after=10)
 
     async def ban_callback(interaction):
-        await member.ban(reason=reason)
-        banembed=discord.Embed(title=f'{member} has been kicked', color=15158332)
-        banembed.add_field(name="Reason",value=reason)
-        banembed.add_field(name="Command ran by:",value=ctx.message.author)
-        await ctx.send(ctx.message.author.mention,embed=banembed)
-        await ctx.message.delete()
-        await originalmsg.delete()
+        if interaction.user.id == ctx.message.author.id:
+            await member.ban(reason=reason)
+            banembed=discord.Embed(title=f'{member} has been banned', color=16776960)
+            banembed.add_field(name="Reason",value=reason)
+            banembed.add_field(name="Command ran by:",value=ctx.message.author)
+            await ctx.send(ctx.message.author.mention,embed=banembed)
+            await ctx.message.delete()
+            await originalmsg.delete()
+        else:
+            await interaction.response.send_message("Sorry, you do not have access to this command",ephemeral=True,delete_after=10)
 
 
     async def timeout_callback(interaction):
+        if interaction.user.id == ctx.message.author.id:
+            timeoutembed = discord.Embed(title=f"Timeout Controls for: {member}",color=16776960)
+            timedoutmsg = await ctx.send(ctx.message.author.mention,embed=timeoutembed)
+            select = Select(placeholder="Choose a option.",options=[discord.SelectOption(label="1m"),discord.SelectOption(label="5m"),discord.SelectOption(label="10m"),discord.SelectOption(label="1hr"),discord.SelectOption(label="4hr"),discord.SelectOption(label="1d")])
+            newview = View()
+            newview.add_item(select)
+            await originalmsg.delete()
+            sendselect = await ctx.send(view=newview)
+
+            async def select_callback(interaction):
+                print(select.values)
+                embed = discord.Embed(title=f"",color=3066993)
+                embed.add_field(name="Reason",value=reason)
+                if select.values[0] == '1m':
+                    delta = timedelta(
+                        seconds=60
+                    )
+                    embed.title = f"{member} has been timed out for 1 minute."
+                    await member.timeout(delta, reason=reason)
+                elif select.values[0] == '5m':
+                    delta = timedelta(
+                        minutes=5
+                    )
+                    embed.title = f"{member} has been timed out for 5 minutes."
+                    await member.timeout(delta, reason=reason)
+                elif select.values[0] == '10m':
+                    delta = timedelta(
+                        minutes=10
+                    )
+                    embed.title = f"{member} has been timed out for 10 minutes."
+                    await member.timeout(delta, reason=reason)
+                elif select.values[0] == '1hr':
+                    delta = timedelta(
+                        hours=1
+                    )
+                    embed.title = f"{member} has been timed out for 1 hour."
+                    await member.timeout(delta, reason=reason)
+                elif select.values[0] == '4hr':
+                    delta = timedelta(
+                        hours=4
+                    )
+                    embed.title = f"{member} has been timed out for 4 hours."
+                    await member.timeout(delta, reason=reason)
+                elif select.values[0] == '1d':
+                    delta = timedelta(
+                        days=1
+                    )
+                    embed.title = f"{member} has been timed out for 1 day."
+                    await member.timeout(delta, reason=reason)
+
+                await sendselect.delete()
+                await timedoutmsg.delete()
         
-        timeoutembed = discord.Embed(title=f"Timeout Controls for: {member}",color=16776960)
-        timedoutmsg = await ctx.send(embed=timeoutembed)
-        select = Select(placeholder="Choose a option.",options=[discord.SelectOption(label="1m"),discord.SelectOption(label="5m"),discord.SelectOption(label="10m"),discord.SelectOption(label="1hr"),discord.SelectOption(label="4hr"),discord.SelectOption(label="1d")])
-        newview = View()
-        newview.add_item(select)
-        await originalmsg.delete()
-        sendselect = await ctx.send(view=newview)
-
-        async def select_callback(interaction):
-            print(select.values)
-            embed = discord.Embed(title=f"",color=3066993)
-            embed.add_field(name="Reason",value=reason)
-            if select.values[0] == '1m':
-                delta = timedelta(
-                    seconds=60
-                )
-                embed.title = f"{member} has been timed out for 1 minute."
-                await member.timeout(delta, reason=reason)
-            elif select.values[0] == '5m':
-                delta = timedelta(
-                    minutes=5
-                )
-                embed.title = f"{member} has been timed out for 5 minutes."
-                await member.timeout(delta, reason=reason)
-            elif select.values[0] == '10m':
-                delta = timedelta(
-                    minutes=10
-                )
-                embed.title = f"{member} has been timed out for 10 minutes."
-                await member.timeout(delta, reason=reason)
-            elif select.values[0] == '1hr':
-                delta = timedelta(
-                    hours=1
-                )
-                embed.title = f"{member} has been timed out for 1 hour."
-                await member.timeout(delta, reason=reason)
-            elif select.values[0] == '4hr':
-                delta = timedelta(
-                    hours=4
-                )
-                embed.title = f"{member} has been timed out for 4 hours."
-                await member.timeout(delta, reason=reason)
-            elif select.values[0] == '1d':
-                delta = timedelta(
-                    days=1
-                )
-                embed.title = f"{member} has been timed out for 1 day."
-                await member.timeout(delta, reason=reason)
-
-            await sendselect.delete()
-            await timedoutmsg.delete()
-    
-            await ctx.send(ctx.message.author.mention,embed=embed)
-            await ctx.message.delete()
-
+                await ctx.send(ctx.message.author.mention,embed=embed)
+                await ctx.message.delete()
+        else:
+            await interaction.response.send_message("Sorry, you do not have access to this command",ephemeral=True,delete_after=10)
 
         select.callback = select_callback
 
