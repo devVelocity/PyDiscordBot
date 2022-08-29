@@ -33,11 +33,10 @@ async def ban(ctx, member: discord.Member, *, reason=None):
     embed.add_field(name="Command ran by:",value=ctx.message.author)
     await ctx.send(embed=embed)
 
-@client.command()
-async def nickname(ctx, member: discord.member, nickname):
-    await member.edit(nick=nickname)
-    embed=discord.Embed(title=f"{member}'s nickname has been changed", color=15158332)
-    embed.add_field(name="Command ran by:",value=ctx.message.author)
+@client.command(pass_context=True)
+async def nick(ctx, member: discord.Member, *, nick):
+    await member.edit(nick=nick)
+    embed=discord.Embed(title=f"{member}'s nickname has been changed to '{nick}'", color=15158332)
     await ctx.send(ctx.message.author.mention,embed=embed,delete_after=5)
 
 @client.command()
