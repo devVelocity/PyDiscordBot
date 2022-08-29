@@ -274,7 +274,54 @@ async def checkbannedwords(ctx):
         await ctx.message.delete()
         await ctx.send(ctx.message.author.mention, embed=embed)
 
+@client.command()
+async def addmod(ctx, member: discord.Member):
+    if moderatorcheck(ctx.message.author.id) == True:
+        jsonstore = open("guilddata.json")
+        f = json.load(jsonstore)
+        foundguild = False
+        for item in f:
+            if item.get("guildID") == ctx.guild.id:
+                if member.id in item.get("mods"):
+                    embed = discord.Embed(title=f"{member} is already on the Moderator List.",color=15158332)
+                    await ctx.message.delete()
+                    await ctx.send(ctx.message.author.mention,embed=embed)
+                else:
+                    with open('guilddata.json','w') as out_file:
+                        item.get("mods").append(member.id)
+                        json.dump(f,out_file,indent=4)
+                        embed = discord.Embed(title=f"{member} has been added to the Moderator List.",color=3066993)
+                        await ctx.message.delete()
+                        await ctx.send(ctx.message.author.mention,embed=embed)
+                    return
 
+@client.command()
+async def rmmod(ctx, member: discord.Member):
+    if moderatorcheck(ctx.message.author.id) == True:
+        jsonstore = open("guilddata.json")
+        f = json.load(jsonstore)
+        foundguild = False
+        for item in f:
+            if item.get("guildID") == ctx.guild.id:
+                if member.id in item.get("mods"):
+                    if member.id != ctx.message.guild.owner_id:
+                        with open('guilddata.json','w') as out_file:
+                            valuetopop = item.get("mods").index(member.id)
+                            item.get("mods").pop(valuetopop)
+                            json.dump(f,out_file,indent=4)
+                            embed = discord.Embed(title=f"{member} has been removed to the Moderator List.",color=3066993)
+                            await ctx.message.delete()
+                            await ctx.send(ctx.message.author.mention,embed=embed)
+                        return
+                    else:
+                        embed = discord.Embed(title=f"You cannot remove the Owner from the Moderator List",color=15158332)
+                        await ctx.message.delete()
+                        await ctx.send(ctx.message.author.mention,embed=embed)
+                else:
+                    embed = discord.Embed(title=f"{member} is not on the Moderator List.",color=15158332)
+                    await ctx.message.delete()
+                    await ctx.send(ctx.message.author.mention,embed=embed)
+    # run bot      
 
 def contains_word(text, word):
     return bool(re.search(r'\b' + re.escape(word) + r'\b', text))
@@ -314,6 +361,6 @@ async def on_message(message):
 
             return
     await client.process_commands(message)
-# run bot      
+
 client.run(TOKEN)
 
