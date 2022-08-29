@@ -234,7 +234,7 @@ async def setup(ctx):
                 foundguild == True 
                 embed=discord.Embed(title='Bot has already been previously setup!', color=3066993)
                 embed.add_field(name="Additional Tip:",value="Run 'setLogsChannel' with a Channel ID to set a Channel for Message Logs.")
-                embed.add_field(name="Additional Tip:",value="Run 'addModerator' with a User ID to add a Moderator.")
+                embed.add_field(name="Additional Tip:",value="Run 'addModerator' mentioning a User to add a Moderator.")
                 await ctx.send(ctx.message.author.mention,embed=embed)
                 return
 
@@ -309,14 +309,14 @@ async def rmmod(ctx, member: discord.Member):
                             valuetopop = item.get("mods").index(member.id)
                             item.get("mods").pop(valuetopop)
                             json.dump(f,out_file,indent=4)
-                            embed = discord.Embed(title=f"{member} has been removed to the Moderator List.",color=3066993)
+                            embed = discord.Embed(title=f"{member} has been removed from the Moderator List.",color=15158332)
                             await ctx.message.delete()
                             await ctx.send(ctx.message.author.mention,embed=embed)
                         return
                     else:
-                        embed = discord.Embed(title=f"You cannot remove the Owner from the Moderator List",color=15158332)
+                        embed = discord.Embed(title=f"You cannot remove the Server Owner from the Moderator List",color=15158332)
                         await ctx.message.delete()
-                        await ctx.send(ctx.message.author.mention,embed=embed)
+                        await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
                 else:
                     embed = discord.Embed(title=f"{member} is not on the Moderator List.",color=15158332)
                     await ctx.message.delete()
