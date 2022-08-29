@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from discord import Button, ButtonStyle
+from discord.ui import Button, View, Select
+from datetime import timedelta
 import json
 import re
 
@@ -15,6 +16,103 @@ intents = discord.Intents.all() # or .all() if you ticked all, that is easier
 intents.members = True
 
 client = commands.Bot(command_prefix=".",intents=intents)
+
+@client.command()
+async def mod(ctx, member: discord.Member, *, reason=None):
+    embed = discord.Embed(title=f"Moderator Controls for User: {member}",color=16776960)
+    button1 = Button(label="Kick",style=discord.ButtonStyle.blurple)
+    button2 = Button(label="Ban",style=discord.ButtonStyle.blurple)
+    button3 = Button(label="Timeout",style=discord.ButtonStyle.blurple)
+    view = View()
+    view.add_item(button1)
+    view.add_item(button2)
+    view.add_item(button3)
+    originalmsg = await ctx.send(embed=embed,view=view)
+
+    async def kick_callback(interaction):
+        await member.kick(reason=reason)
+        kickembed=discord.Embed(title=f'{member} has been kicked', color=15158332)
+        kickembed.add_field(name="Reason",value=reason)
+        kickembed.add_field(name="Command ran by:",value=ctx.message.author)
+        await ctx.send(ctx.message.author.mention,embed=kickembed)
+        await ctx.message.delete()
+        await originalmsg.delete()
+
+    async def ban_callback(interaction):
+        await member.ban(reason=reason)
+        banembed=discord.Embed(title=f'{member} has been kicked', color=15158332)
+        banembed.add_field(name="Reason",value=reason)
+        banembed.add_field(name="Command ran by:",value=ctx.message.author)
+        await ctx.send(ctx.message.author.mention,embed=banembed)
+        await ctx.message.delete()
+        await originalmsg.delete()
+
+
+    async def timeout_callback(interaction):
+        
+        timeoutembed = discord.Embed(title=f"Timeout Controls for: {member}",color=16776960)
+        timedoutmsg = await ctx.send(embed=timeoutembed)
+        select = Select(placeholder="Choose a option.",options=[discord.SelectOption(label="1m"),discord.SelectOption(label="5m"),discord.SelectOption(label="10m"),discord.SelectOption(label="1hr"),discord.SelectOption(label="4hr"),discord.SelectOption(label="1d")])
+        newview = View()
+        newview.add_item(select)
+        await originalmsg.delete()
+        sendselect = await ctx.send(view=newview)
+
+        async def select_callback(interaction):
+            print(select.values)
+            embed = discord.Embed(title=f"",color=3066993)
+            embed.add_field(name="Reason",value=reason)
+            if select.values[0] == '1m':
+                delta = timedelta(
+                    seconds=60
+                )
+                embed.title = f"{member} has been timed out for 1 minute."
+                await member.timeout(delta, reason=reason)
+            elif select.values[0] == '5m':
+                delta = timedelta(
+                    minutes=5
+                )
+                embed.title = f"{member} has been timed out for 5 minutes."
+                await member.timeout(delta, reason=reason)
+            elif select.values[0] == '10m':
+                delta = timedelta(
+                    minutes=10
+                )
+                embed.title = f"{member} has been timed out for 10 minutes."
+                await member.timeout(delta, reason=reason)
+            elif select.values[0] == '1hr':
+                delta = timedelta(
+                    hours=1
+                )
+                embed.title = f"{member} has been timed out for 1 hour."
+                await member.timeout(delta, reason=reason)
+            elif select.values[0] == '4hr':
+                delta = timedelta(
+                    hours=4
+                )
+                embed.title = f"{member} has been timed out for 4 hours."
+                await member.timeout(delta, reason=reason)
+            elif select.values[0] == '1d':
+                delta = timedelta(
+                    days=1
+                )
+                embed.title = f"{member} has been timed out for 1 day."
+                await member.timeout(delta, reason=reason)
+
+            await sendselect.delete()
+            await timedoutmsg.delete()
+    
+            await ctx.send(ctx.message.author.mention,embed=embed)
+            await ctx.message.delete()
+
+
+        select.callback = select_callback
+
+
+    button1.callback = kick_callback
+    button2.callback = ban_callback
+    button3.callback = timeout_callback
+    
 
 
 @client.command()
