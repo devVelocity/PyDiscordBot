@@ -59,7 +59,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                     await ctx.message.delete()
                     await originalmsg.delete()
                 else:
-                    await interaction.response.send_message("Sorry, you do not have access to this command",ephemeral=True)
+                    await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
             except:
                 await originalmsg.delete()
 
@@ -78,7 +78,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                     await ctx.message.delete()
                     await originalmsg.delete()
                 else:
-                    await interaction.response.send_message("Sorry, you do not have access to this command",ephemeral=True)
+                    await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
             except:
                 await originalmsg.delete()
 
@@ -173,7 +173,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                 embed = discord.Embed(title=f"{member} has been timed out for {msgsplit[0]}m, {msgsplit[1]}h and {msgsplit[2]}d",color=3066993)
                                 embed.add_field(name="Reason",value=reason)
                                 await msg.delete()
-                                await ctx.send(ctx.message.author.mention, embed=embed)
+                                await ctx.send(ctx.message.author.mention, embed=embed,delete_after=30)
                                 await member.timeout(delta, reason=reason)
                                 await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for {msgsplit[0]}m, {msgsplit[1]}h and {msgsplit[2]}d","ranby":ctx.message.author,"reason":reason})
                         except:
@@ -182,10 +182,10 @@ async def mod(ctx, member: discord.Member, *, reason=None):
 
                         await sendselect.delete()
                 
-                        await ctx.send(ctx.message.author.mention,embed=embed)
+                        await ctx.send(ctx.message.author.mention,embed=embed,delete_after=30)
                         await ctx.message.delete()
                 else:
-                    await interaction.response.send_message("Sorry, you do not have access to this command",ephemeral=True)
+                    await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
 
                 select.callback = select_callback
             except:
