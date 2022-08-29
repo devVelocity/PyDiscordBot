@@ -31,9 +31,12 @@ async def mod(ctx, member: discord.Member, *, reason=None):
     if moderatorcheck(ctx.message.author.id) == True:
             
         await ctx.message.delete()
-        embed = discord.Embed(title=f"Moderator Controls for User: {member}",color=16776960)
-        button1 = Button(label="Kick",style=discord.ButtonStyle.blurple)
-        button2 = Button(label="Ban",style=discord.ButtonStyle.blurple)
+        embed = discord.Embed(title=f"Moderation Controls for User: {member}",color=16776960)
+        if reason:
+            embed.add_field(name="Reason for Moderation:",value=reason)
+
+        button1 = Button(label="Kick",style=discord.ButtonStyle.red)
+        button2 = Button(label="Ban",style=discord.ButtonStyle.red)
         button3 = Button(label="Timeout",style=discord.ButtonStyle.blurple)
         view = View()
         view.add_item(button1)
@@ -42,12 +45,16 @@ async def mod(ctx, member: discord.Member, *, reason=None):
         originalmsg = await ctx.send(embed=embed,view=view)
 
         async def kick_callback(interaction):
+            button1.style=discord.ButtonStyle.gray
+            button2.style=discord.ButtonStyle.gray
+            button3.style=discord.ButtonStyle.gray
             try:
                 if interaction.user.id == ctx.message.author.id:
                     await member.kick(reason=reason)
                     kickembed=discord.Embed(title=f'{member} has been kicked', color=16776960)
                     kickembed.add_field(name="Reason",value=reason)
                     kickembed.add_field(name="Command ran by:",value=ctx.message.author)
+                    await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been kicked","ranby":ctx.message.author,"reason":reason})  
                     await ctx.send(ctx.message.author.mention,embed=kickembed)
                     await ctx.message.delete()
                     await originalmsg.delete()
@@ -57,12 +64,16 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                 await originalmsg.delete()
 
         async def ban_callback(interaction):
+            button1.style=discord.ButtonStyle.gray
+            button2.style=discord.ButtonStyle.gray
+            button3.style=discord.ButtonStyle.gray
             try:
                 if interaction.user.id == ctx.message.author.id:
                     await member.ban(reason=reason)
                     banembed=discord.Embed(title=f'{member} has been banned', color=16776960)
                     banembed.add_field(name="Reason",value=reason)
                     banembed.add_field(name="Command ran by:",value=ctx.message.author)
+                    await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been banned","ranby":ctx.message.author,"reason":reason})  
                     await ctx.send(ctx.message.author.mention,embed=banembed)
                     await ctx.message.delete()
                     await originalmsg.delete()
@@ -72,14 +83,31 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                 await originalmsg.delete()
 
         async def timeout_callback(interaction):
+            button1.style=discord.ButtonStyle.gray
+            button2.style=discord.ButtonStyle.gray
+            button3.style=discord.ButtonStyle.gray
+            
             try:
                 if interaction.user.id == ctx.message.author.id:
+
+                    
                     timeoutembed = discord.Embed(title=f"Timeout Controls for: {member}",color=16776960)
-                    select = Select(placeholder="Choose a option.",options=[discord.SelectOption(label="1m"),discord.SelectOption(label="5m"),discord.SelectOption(label="10m"),discord.SelectOption(label="1hr"),discord.SelectOption(label="4hr"),discord.SelectOption(label="1d")])
+                    timeoutembed.add_field(name="Reason for Timeout:",value=reason)
+                    select = Select(placeholder="Choose a option.",options=[discord.SelectOption(label="1m"),discord.SelectOption(label="10m"),discord.SelectOption(label="1hr"),discord.SelectOption(label="Custom")])
                     newview = View()
                     newview.add_item(select)
+                    cancelButton = Button(label="Cancel",style=discord.ButtonStyle.red)
+                    newview.add_item(cancelButton)
                     await originalmsg.delete()
+
                     sendselect = await ctx.send(ctx.message.author.mention,embed=timeoutembed,view=newview)
+
+                    async def cancel_callback(interaction):
+                        await sendselect.delete()
+                        embed = discord.Embed(title="Timeout Cancelled",color=15158332)
+                        await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+
+                    cancelButton.callback = cancel_callback
 
                     async def select_callback(interaction):
                         try:
@@ -91,12 +119,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                     seconds=60
                                 )
                                 embed.title = f"{member} has been timed out for 1 minute."
-                                await member.timeout(delta, reason=reason)
-                            elif select.values[0] == '5m':
-                                delta = timedelta(
-                                    minutes=5
-                                )
-                                embed.title = f"{member} has been timed out for 5 minutes."
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 minute","ranby":ctx.message.author,"reason":reason}) 
                                 await member.timeout(delta, reason=reason)
                             elif select.values[0] == '10m':
                                 delta = timedelta(
@@ -104,31 +127,28 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                 )
                                 embed.title = f"{member} has been timed out for 10 minutes."
                                 await member.timeout(delta, reason=reason)
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 10 minutes","ranby":ctx.message.author,"reason":reason}) 
                             elif select.values[0] == '1hr':
                                 delta = timedelta(
                                     hours=1
                                 )
                                 embed.title = f"{member} has been timed out for 1 hour."
                                 await member.timeout(delta, reason=reason)
-                            elif select.values[0] == '4hr':
-                                delta = timedelta(
-                                    hours=4
-                                )
-                                embed.title = f"{member} has been timed out for 4 hours."
-                                await member.timeout(delta, reason=reason)
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 hour","ranby":ctx.message.author,"reason":reason}) 
                             elif select.values[0] == '1d':
                                 delta = timedelta(
                                     days=1
                                 )
                                 embed.title = f"{member} has been timed out for 1 day."
                                 await member.timeout(delta, reason=reason)
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 day","ranby":ctx.message.author,"reason":reason})
+                            elif select.values[0] == 'Custom':
+                                print("non functional")
                         except:
                             await sendselect.delete()
-                            await timedoutmsg.delete()
                             await ctx.message.delete()
 
                         await sendselect.delete()
-                        await timedoutmsg.delete()
                 
                         await ctx.send(ctx.message.author.mention,embed=embed)
                         await ctx.message.delete()
@@ -138,7 +158,6 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                 select.callback = select_callback
             except:
                 await sendselect.delete()
-                await timedoutmsg.delete()
 
 
 
@@ -155,6 +174,7 @@ async def kick(ctx, member: discord.Member, *, reason=None):
         embed=discord.Embed(title=f'{member} has been kicked', color=15158332)
         embed.add_field(name="Reason",value=reason)
         embed.add_field(name="Command ran by:",value=ctx.message.author)
+        await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been kicked","ranby":ctx.message.author,"reason":reason})  
         await ctx.send(embed=embed)
 
 @client.command()
@@ -164,14 +184,65 @@ async def ban(ctx, member: discord.Member, *, reason=None):
         embed=discord.Embed(title=f'{member} has been banned', color=15158332)
         embed.add_field(name="Reason",value=reason)
         embed.add_field(name="Command ran by:",value=ctx.message.author)
+        await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been banned","ranby":ctx.message.author,"reason":reason})   
         await ctx.send(embed=embed)
+
+
+async def sendLog(data):
+    print(data)
+    jsonstore = open("guilddata.json")
+    f = json.load(jsonstore)
+    for item in f:
+        if item.get("guildID") == data.get("guildid"):
+            await client.wait_until_ready()
+            channel = client.get_channel(item.get("logsChannel"))
+            embed = discord.Embed(title=data.get("logtitle"),color=9807270)
+            embed.add_field(name="Command ran by:",value=data.get("ranby"))
+            if data.get("reason"):
+                embed.add_field(name="Reason",value=data["reason"])
+            await channel.send(embed=embed)
+
+
+
+@client.command()
+async def setlog(ctx,*,channel):
+    if moderatorcheck(ctx.message.author.id) == True:
+        jsonstore = open("guilddata.json")
+        f = json.load(jsonstore)
+        print("channel")
+        if channel == "-rm":
+            for item in f:
+                if item.get("guildID") == ctx.guild.id:
+                    with open('guilddata.json','w') as out_file:
+                        item["logsChannel"] = int(0)
+                        print("log change")
+                        json.dump(f,out_file,indent=4)
+
+                    embed=discord.Embed(title=f'Logs Channel has been removed!', color=15158332)
+                    # embed.add_field(name="Command ran by:",value=ctx.message.author)
+                    await ctx.message.delete()
+                    await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+        else:
+            for item in f:
+                if item.get("guildID") == ctx.guild.id:
+                    with open('guilddata.json','w') as out_file:
+                        item["logsChannel"] = int(channel)
+                        print("log change")
+                        json.dump(f,out_file,indent=4)
+
+                    embed=discord.Embed(title=f'Logs Channel has been set!', color=3066993)
+                    # embed.add_field(name="Command ran by:",value=ctx.message.author)
+                    await ctx.message.delete()
+                    await sendLog({"guildid":ctx.guild.id,"logtitle":f"Logs channel has been set to {channel}","ranby":ctx.message.author})
+                    await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+
+
 
 @client.command()
 async def addbanword(ctx, word):
     if moderatorcheck(ctx.message.author.id) == True:
         jsonstore = open("guilddata.json")
         f = json.load(jsonstore)
-        print(f)
         foundguild = False
         for item in f:
             if item.get("guildID") == ctx.guild.id:
@@ -184,6 +255,7 @@ async def addbanword(ctx, word):
                     embed=discord.Embed(title=f'"{word}" has been added to the word banlist.', color=3066993)
                     # embed.add_field(name="Command ran by:",value=ctx.message.author)
                     await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+                    await sendLog({"guildid":ctx.guild.id,"logtitle":f"{word} has been added to the word banlist","ranby":ctx.message.author})                    
                 return
         
         ctx.message.delete()
@@ -216,6 +288,7 @@ async def removebanword(ctx, word):
                     embed=discord.Embed(title=f'"{word}" has been removed from the word banlist', color=3066993)
                     # embed.add_field(name="Command ran by:",value=ctx.message.author)
                     await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+                    await sendLog({"guildid":ctx.guild.id,"logtitle":f"{word} has been removed from the word banlist","ranby":ctx.message.author})                    
                 return
         ctx.message.delete()
 
@@ -232,8 +305,8 @@ async def setup(ctx):
             if item.get("guildID") == ctx.guild.id:
                 foundguild == True 
                 embed=discord.Embed(title='Bot has already been previously setup!', color=3066993)
-                embed.add_field(name="Additional Tip:",value="Run 'setLogsChannel' with a Channel ID to set a Channel for Message Logs.")
-                embed.add_field(name="Additional Tip:",value="Run 'addModerator' mentioning a User to add a Moderator.")
+                embed.add_field(name="Additional Tip:",value="Run 'setlog' with a Channel ID to set a Channel for Message Logs.")
+                embed.add_field(name="Additional Tip:",value="Run 'addmod' mentioning a User to add a Moderator.")
                 await ctx.send(ctx.message.author.mention,embed=embed)
                 return
 
@@ -291,6 +364,7 @@ async def addmod(ctx, member: discord.Member):
                         json.dump(f,out_file,indent=4)
                         embed = discord.Embed(title=f"{member} has been added to the Moderator List.",color=3066993)
                         await ctx.message.delete()
+                        await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been added to the Moderator List.","ranby":ctx.message.author})                    
                         await ctx.send(ctx.message.author.mention,embed=embed)
                     return
 
@@ -309,6 +383,7 @@ async def rmmod(ctx, member: discord.Member):
                             item.get("mods").pop(valuetopop)
                             json.dump(f,out_file,indent=4)
                             embed = discord.Embed(title=f"{member} has been removed from the Moderator List.",color=15158332)
+                            await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been removed from the Moderator List.","ranby":ctx.message.author})                    
                             await ctx.message.delete()
                             await ctx.send(ctx.message.author.mention,embed=embed)
                         return
