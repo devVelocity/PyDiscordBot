@@ -75,12 +75,11 @@ async def mod(ctx, member: discord.Member, *, reason=None):
             try:
                 if interaction.user.id == ctx.message.author.id:
                     timeoutembed = discord.Embed(title=f"Timeout Controls for: {member}",color=16776960)
-                    timedoutmsg = await ctx.send(ctx.message.author.mention,embed=timeoutembed)
                     select = Select(placeholder="Choose a option.",options=[discord.SelectOption(label="1m"),discord.SelectOption(label="5m"),discord.SelectOption(label="10m"),discord.SelectOption(label="1hr"),discord.SelectOption(label="4hr"),discord.SelectOption(label="1d")])
                     newview = View()
                     newview.add_item(select)
                     await originalmsg.delete()
-                    sendselect = await ctx.send(view=newview)
+                    sendselect = await ctx.send(ctx.message.author.mention,embed=timeoutembed,view=newview)
 
                     async def select_callback(interaction):
                         try:
