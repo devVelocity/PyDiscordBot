@@ -16,7 +16,7 @@ intents = discord.Intents.all() # or .all() if you ticked all, that is easier
 intents.members = True
 
 client = commands.Bot(command_prefix=".",intents=intents)
-client.remove_command('help')
+# client.remove_command('help')
 
 def moderatorcheck(modid):
     jsonstore = open("guilddata.json")
