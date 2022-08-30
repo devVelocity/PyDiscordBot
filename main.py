@@ -177,7 +177,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                 await msg.delete()
                                 await ctx.send(ctx.message.author.mention, embed=embed,delete_after=30)
                                 await member.timeout(delta, reason=reason)
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for {msgsplit[0]}m, {msgsplit[1]}h and {msgsplit[2]}d","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id})
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for {msgsplit[0]}m, {msgsplit[1]}h and {msgsplit[2]}d","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id})
                         except:
                             await sendselect.delete()
                             await ctx.message.delete()
