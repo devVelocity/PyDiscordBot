@@ -124,7 +124,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                     seconds=60
                                 )
                                 embed.title = f"{member} has been timed out for 1 minute."
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 minute","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member.mention} has been timed out for 1 minute","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
                                 await member.timeout(delta, reason=reason)
                             elif select.values[0] == '10m':
                                 delta = timedelta(
@@ -132,21 +132,21 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                 )
                                 embed.title = f"{member} has been timed out for 10 minutes."
                                 await member.timeout(delta, reason=reason)
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 10 minutes","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member.mention} has been timed out for 10 minutes","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
                             elif select.values[0] == '1hr':
                                 delta = timedelta(
                                     hours=1
                                 )
                                 embed.title = f"{member} has been timed out for 1 hour."
                                 await member.timeout(delta, reason=reason)
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 hour","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member.mention} has been timed out for 1 hour","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
                             elif select.values[0] == '1d':
                                 delta = timedelta(
                                     days=1
                                 )
                                 embed.title = f"{member} has been timed out for 1 day."
                                 await member.timeout(delta, reason=reason)
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 day","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id})
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member.mention} has been timed out for 1 day","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id})
                             elif select.values[0] == 'Custom':
                                 await sendselect.delete()
                                 embed = discord.Embed(title="Input the amount of time (minutes,hours,days). Up until a maximum of 28 days",color=16776960)
@@ -434,7 +434,7 @@ async def rmmod(ctx, member: discord.Member):
                             item.get("mods").pop(valuetopop)
                             json.dump(f,out_file,indent=4)
                             embed = discord.Embed(title=f"{member} has been removed from the Moderator List.",color=15158332)
-                            await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been removed from the Moderator List.","ranby":ctx.message.author.id})                    
+                            await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member.mention} has been removed from the Moderator List.","ranby":ctx.message.author.id})                    
                             await ctx.message.delete()
                             await ctx.send(ctx.message.author.mention,embed=embed)
                         return
