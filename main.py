@@ -38,6 +38,8 @@ async def mod(ctx, member: discord.Member, *, reason=None):
         if reason:
             embed.add_field(name="Reason for Moderation:",value=reason)
 
+        embed.add_field(name="⠀",value="Type 'cancel' to cancel the action.",inline=False)
+
         button1 = Button(label="Kick",style=discord.ButtonStyle.red)
         button2 = Button(label="Ban",style=discord.ButtonStyle.red)
         button3 = Button(label="Timeout",style=discord.ButtonStyle.blurple)
@@ -46,17 +48,8 @@ async def mod(ctx, member: discord.Member, *, reason=None):
         view.add_item(button1)
         view.add_item(button2)
         view.add_item(button3)
-                view.add_item(cancelButton)
         originalmsg = await ctx.send(embed=embed,view=view)
 
-        async def cancelButton_callback(interaction):
-            button1.style=discord.ButtonStyle.gray
-            button2.style=discord.ButtonStyle.gray
-            button3.style=discord.ButtonStyle.gray
-            embed = discord.Embed(title="Moderation Cancelled",color=16776960)
-            await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
-            await originalmsg.delete()
-            await ctx.message.delete()
 
         async def kick_callback(interaction):
             try:
@@ -222,7 +215,20 @@ async def mod(ctx, member: discord.Member, *, reason=None):
         button1.callback = kick_callback
         button2.callback = ban_callback
         button3.callback = timeout_callback
-        cancelButton.callback = cancelButton_callback
+        
+        def check(m):
+            return m.content and m.channel == ctx.message.channel and m.author == ctx.message.author
+        
+        msg = await client.wait_for('message',check=check)
+        if msg.content.lower() == "cancel":
+            await msg.delete()
+            button1.style=discord.ButtonStyle.gray
+            button2.style=discord.ButtonStyle.gray
+            button3.style=discord.ButtonStyle.gray
+            embed = discord.Embed(title="Moderation Cancelled",color=15158332 	)
+            await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+            await originalmsg.delete()
+            await ctx.message.delete()
     
 
 @client.command()
