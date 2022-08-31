@@ -41,11 +41,22 @@ async def mod(ctx, member: discord.Member, *, reason=None):
         button1 = Button(label="Kick",style=discord.ButtonStyle.red)
         button2 = Button(label="Ban",style=discord.ButtonStyle.red)
         button3 = Button(label="Timeout",style=discord.ButtonStyle.blurple)
+        cancelButton = Button(label="Cancel",style=discord.ButtonStyle.gray)
         view = View()
         view.add_item(button1)
         view.add_item(button2)
         view.add_item(button3)
+                view.add_item(cancelButton)
         originalmsg = await ctx.send(embed=embed,view=view)
+
+        async def cancelButton_callback(interaction):
+            button1.style=discord.ButtonStyle.gray
+            button2.style=discord.ButtonStyle.gray
+            button3.style=discord.ButtonStyle.gray
+            embed = discord.Embed(title="Moderation Cancelled",color=16776960)
+            await ctx.send(ctx.message.author.mention,embed=embed,delete_after=10)
+            await originalmsg.delete()
+            await ctx.message.delete()
 
         async def kick_callback(interaction):
             try:
@@ -137,29 +148,30 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                     seconds=60
                                 )
                                 embed.title = f"{member} has been timed out for 1 minute."
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 minute","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
                                 await member.timeout(delta, reason=reason)
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 minute","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id}) 
+
                             elif select.values[0] == '10m':
                                 delta = timedelta(
                                     minutes=10
                                 )
                                 embed.title = f"{member} has been timed out for 10 minutes."
                                 await member.timeout(delta, reason=reason)
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 10 minutes","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 10 minutes","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id}) 
                             elif select.values[0] == '1hr':
                                 delta = timedelta(
                                     hours=1
                                 )
                                 embed.title = f"{member} has been timed out for 1 hour."
                                 await member.timeout(delta, reason=reason)
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 hour","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id}) 
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 hour","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id}) 
                             elif select.values[0] == '1d':
                                 delta = timedelta(
                                     days=1
                                 )
                                 embed.title = f"{member} has been timed out for 1 day."
                                 await member.timeout(delta, reason=reason)
-                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 day","ranby":ctx.message.author,"reason":reason,"channel":ctx.message.channel.id})
+                                await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for 1 day","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id})
                             elif select.values[0] == 'Custom':
                                 await sendselect.delete()
                                 embed = discord.Embed(title="Input the amount of time (minutes,hours,days). Up until a maximum of 28 days",color=16776960)
@@ -193,10 +205,9 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                                 await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been timed out for {msgsplit[0]}m, {msgsplit[1]}h and {msgsplit[2]}d","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id})
                         except:
                             await sendselect.delete()
-                            await ctx.message.delete()
+
 
                         await sendselect.delete()
-                
                         await ctx.send(ctx.message.author.mention,embed=embed,delete_after=30)
                         await ctx.message.delete()
                 else:
@@ -211,6 +222,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
         button1.callback = kick_callback
         button2.callback = ban_callback
         button3.callback = timeout_callback
+        cancelButton.callback = cancelButton_callback
     
 
 @client.command()
