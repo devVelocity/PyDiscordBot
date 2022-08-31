@@ -438,7 +438,7 @@ async def addmod(ctx, member: discord.Member):
                         json.dump(f,out_file,indent=4)
                         embed = discord.Embed(title=f"{member} has been added to the Moderator List.",color=3066993)
                         await ctx.message.delete()
-                        await ctx.send(ctx.message.author.mention,embed=embed)
+                        await ctx.send(ctx.message.author.mention,embed=embed,delete_after=20)
                     
                     await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been added to the Moderator List","ranby":ctx.message.author.id,"channel":ctx.message.channel.id})                    
                     return
@@ -459,7 +459,7 @@ async def rmmod(ctx, member: discord.Member):
                             json.dump(f,out_file,indent=4)
                             embed = discord.Embed(title=f"{member} has been removed from the Moderator List.",color=15158332)
                             await ctx.message.delete()
-                            await ctx.send(ctx.message.author.mention,embed=embed)
+                            await ctx.send(ctx.message.author.mention,embed=embed,delete_after=20)
                         
                         await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been removed from the Moderator List","ranby":ctx.message.author.id,"channel":ctx.message.channel.id})                    
                         return
