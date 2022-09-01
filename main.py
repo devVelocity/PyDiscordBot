@@ -494,6 +494,12 @@ async def rmmod(ctx, member: discord.Member):
 def contains_word(text, word):
     return bool(re.search(r'\b' + re.escape(word) + r'\b', text))
 
+#detect deleted message
+@client.event
+async def on_message_delete(message, member):
+    if message.author.id == client.user.id:
+        print("msg delete")
+
 @client.event
 async def on_message(message):
     ctx = await client.get_context(message)
