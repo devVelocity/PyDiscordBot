@@ -67,7 +67,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                         kickembed=discord.Embed(title=f'{member} has been kicked', color=16776960)
                         kickembed.add_field(name="Reason",value=reason)
                         kickembed.add_field(name="Command ran by:",value=ctx.message.author)
-                        await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been kicked","ranby":ctx.message.author.id,"reason":reason})  
+                        await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been kicked","ranby":ctx.message.author.id,"reason":reason,"colour":15548997})  
                         await ctx.send(ctx.message.author.mention,embed=kickembed)
                         await ctx.message.delete()
                         await originalmsg.delete()
@@ -93,7 +93,7 @@ async def mod(ctx, member: discord.Member, *, reason=None):
                         banembed=discord.Embed(title=f'{member} has been banned', color=16776960)
                         banembed.add_field(name="Reason",value=reason)
                         banembed.add_field(name="Command ran by:",value=ctx.message.author)
-                        await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been banned","ranby":ctx.message.author.id,"reason":reason})  
+                        await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been banned","ranby":ctx.message.author.id,"reason":reason,"colour":15548997})  
                         await ctx.send(ctx.message.author.mention,embed=banembed)
                         await ctx.message.delete()
                         await originalmsg.delete()
@@ -257,7 +257,7 @@ async def kick(ctx, member: discord.Member, *, reason=None):
             embed=discord.Embed(title=f'{member} has been kicked', color=15158332)
             embed.add_field(name="Reason",value=reason)
             embed.add_field(name="Command ran by:",value=ctx.message.author)
-            await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been kicked","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id})  
+            await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been kicked","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id,"colour":15548997})  
             await ctx.send(embed=embed)
 
 @client.command()
@@ -271,7 +271,7 @@ async def ban(ctx, member: discord.Member, *, reason=None):
             embed=discord.Embed(title=f'{member} has been banned', color=15158332)
             embed.add_field(name="Reason",value=reason)
             embed.add_field(name="Command ran by:",value=ctx.message.author)
-            await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been banned","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id})   
+            await sendLog({"guildid":ctx.guild.id,"logtitle":f"{member} has been banned","ranby":ctx.message.author.id,"reason":reason,"channel":ctx.message.channel.id,"colour":15548997})   
             await ctx.send(embed=embed)
 
 
@@ -283,9 +283,14 @@ async def sendLog(data):
         if item.get("guildID") == data.get("guildid"):
             await client.wait_until_ready()
             channel = client.get_channel(item.get("logsChannel"))
-            embed = discord.Embed(title=data.get("logtitle"),color=16776960)
-            getuser = client.get_user(data.get("ranby"))
-            embed.add_field(name="Command ran by:",value=getuser.mention)
+            embed = discord.Embed(title=data.get("logtitle"))
+            if data.get("colour"):
+                embed.color = data.get("colour")
+            else:
+                embed.color = 16776960
+            if data.get("ranby"):
+                getuser = client.get_user(data.get("ranby"))
+                embed.add_field(name="Command ran by:",value=getuser.mention)
             getchannel = client.get_channel(data.get("channel"))
             embed.add_field(name="Sent in:",value=getchannel.mention)
             if data.get("reason"):
@@ -496,15 +501,16 @@ def contains_word(text, word):
 
 #detect deleted message
 @client.event
-async def on_message_delete(message, member):
-    if message.author.id == client.user.id:
+async def on_message_delete(message):
+    if message.author.id != client.user.id:
         jsonstore = open("guilddata.json")
         f = json.load(jsonstore)
         for item in f:
+            print("a")
             if item.get("guildID") == message.guild.id:
                 if item.get("logsChannel") != 0:
                     if item.get("deleteLogs") == True:
-                        await sendLog({"guildid":message.guild.id,"logtitle":f"{member} has deleted a message in {message.channel}","channel":message.channel.id})                    
+                        await sendLog({"guildid":message.guild.id,"logtitle":f"{message.author}'s message in {message.channel} has been deleted","channel":message.channel.id,"colour":15548997})                    
 
 @client.event
 async def on_message(message):
