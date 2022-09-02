@@ -291,10 +291,14 @@ async def sendLog(data):
             if data.get("ranby"):
                 getuser = client.get_user(data.get("ranby"))
                 embed.add_field(name="Command ran by:",value=getuser.mention)
+
             getchannel = client.get_channel(data.get("channel"))
-            embed.add_field(name="Sent in:",value=getchannel.mention)
+            embed.add_field(name="In:",value=getchannel.mention)
             if data.get("reason"):
                 embed.add_field(name="Reason",value=data["reason"],inline=False)
+            
+            if data.get("msgcontent"):
+                embed.add_field(name="Message Content:",value=data.get("msgcontent"),inline=False)
             await channel.send(embed=embed)
 
 
@@ -510,7 +514,7 @@ async def on_message_delete(message):
             if item.get("guildID") == message.guild.id:
                 if item.get("logsChannel") != 0:
                     if item.get("deleteLogs") == True:
-                        await sendLog({"guildid":message.guild.id,"logtitle":f"{message.author}'s message in {message.channel} has been deleted","channel":message.channel.id,"colour":15548997})                    
+                        await sendLog({"guildid":message.guild.id,"logtitle":f"{message.author}'s message has been deleted","channel":message.channel.id,"colour":15548997,"msgcontent":message.content})                    
 
 @client.event
 async def on_message(message):
