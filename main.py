@@ -276,7 +276,7 @@ async def ban(ctx, member: discord.Member, *, reason=None):
 
 
 async def sendLog(data):
-    print(data)
+    # print(data)
     jsonstore = open("guilddata.json")
     f = json.load(jsonstore)
     for item in f:
@@ -510,7 +510,6 @@ async def on_message_delete(message):
         jsonstore = open("guilddata.json")
         f = json.load(jsonstore)
         for item in f:
-            print("a")
             if item.get("guildID") == message.guild.id:
                 if item.get("logsChannel") != 0:
                     if item.get("deleteLogs") == True:
