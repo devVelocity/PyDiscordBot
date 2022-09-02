@@ -498,7 +498,12 @@ def contains_word(text, word):
 @client.event
 async def on_message_delete(message, member):
     if message.author.id == client.user.id:
-        print("msg delete")
+        jsonstore = open("guilddata.json")
+        f = json.load(jsonstore)
+        for item in f:
+            if item.get("logsChannel") != 0:
+                if item.get("deleteLogs") == True:
+                    await sendLog({"guildid":message.guild.id,"logtitle":f"{member} has deleted a message in {message.channel}","channel":message.channel.id})                    
 
 @client.event
 async def on_message(message):
