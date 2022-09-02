@@ -501,9 +501,10 @@ async def on_message_delete(message, member):
         jsonstore = open("guilddata.json")
         f = json.load(jsonstore)
         for item in f:
-            if item.get("logsChannel") != 0:
-                if item.get("deleteLogs") == True:
-                    await sendLog({"guildid":message.guild.id,"logtitle":f"{member} has deleted a message in {message.channel}","channel":message.channel.id})                    
+            if item.get("guildID") == message.guild.id:
+                if item.get("logsChannel") != 0:
+                    if item.get("deleteLogs") == True:
+                        await sendLog({"guildid":message.guild.id,"logtitle":f"{member} has deleted a message in {message.channel}","channel":message.channel.id})                    
 
 @client.event
 async def on_message(message):
