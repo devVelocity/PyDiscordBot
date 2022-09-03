@@ -544,15 +544,24 @@ async def setLogMode(ctx):
             if interaction.user.id == ctx.message.author.id:
                 await originalmsg.delete()
                 cancelEmbed = discord.Embed(title="Action Cancelled",color=15548997)
-                await ctx.send(embed=cancelEmbed,delete_after=10)
+                await ctx.send(ctx.message.author.mention,embed=cancelEmbed,delete_after=10)
             else:
                 await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
 
         async def remove_logs_callback(interaction):
             if interaction.user.id == ctx.message.author.id:
                 await originalmsg.delete()
-                cancelEmbed = discord.Embed(title="Action Cancelled",color=15548997)
-                await ctx.send(embed=cancelEmbed,delete_after=10)
+                cancelEmbed = discord.Embed(title="All logs removed",color=15548997)
+                jsonstore = open("guilddata.json")
+                f = json.load(jsonstore)
+                for item in f:
+                    if item.get("guildID") == ctx.guild.id:
+                        with open('guilddata.json','w') as out_file:
+                            item["deleteLogs"] = False
+                            json.dump(f,out_file,indent=4)
+
+                await ctx.send(ctx.message.author.mention,embed=cancelEmbed,delete_after=10)
+                await sendLog({"guildid":ctx.guild.id,"logtitle":f"The bot will now no longer log anything.","ranby":ctx.message.author.id,"channel":ctx.message.channel.id})                    
             else:
                 await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
 
@@ -561,12 +570,19 @@ async def setLogMode(ctx):
                 await originalmsg.delete()
                 jsonstore = open("guilddata.json")
                 f = json.load(jsonstore)
-                foundguild = False
                 for item in f:
                     if item.get("guildID") == ctx.guild.id:
                         with open('guilddata.json','w') as out_file:
                             item["deleteLogs"] = "Deleted Messages" in select.values
                             json.dump(f,out_file,indent=4)
+
+                embed = discord.Embed(title="Success!",description="The following items will be now logged by the bot",color=5763719)
+                for index,value in enumerate(select.values):
+                    embed.add_field(name=index+1,value=value)
+
+                await ctx.send(ctx.message.author.mention,embed=embed)
+                await sendLog({"guildid":ctx.guild.id,"logtitle":f"The list of items the bot will log has been changed. Run '.checkLogModes' to check what the bot is logging.","ranby":ctx.message.author.id,"channel":ctx.message.channel.id})                    
+
             else:
                 await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
 
