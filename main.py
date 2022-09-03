@@ -414,7 +414,15 @@ async def setup(ctx):
         if foundguild == False:
             try:
                 with open('guilddata.json','w') as out_file:
-                    f.append({"guildID":ctx.guild.id,"words":[],"mods":[ctx.message.guild.owner_id],"logsChannel":0})
+                    f.append(
+                        {
+                            "guildID":ctx.guild.id,
+                            "words":[],
+                            "mods":[ctx.message.guild.owner_id],
+                            "deleteLogs": False,
+                            "logsChannel":0
+                        }
+                    )
                     embed=discord.Embed(title='Bot has been setup!', color=3066993)
                     embed.add_field(name="Additional Tip:",value="Run 'setLogsChannel' with a Channel ID to set a Channel for Message Logs.")
                     embed.add_field(name="Additional Tip:",value="Run 'addModerator' with a User ID to add a Moderator.")
@@ -502,6 +510,70 @@ async def rmmod(ctx, member: discord.Member):
 
 def contains_word(text, word):
     return bool(re.search(r'\b' + re.escape(word) + r'\b', text))
+
+@client.command()
+async def setLogMode(ctx):
+    if moderatorcheck(ctx.message.author.id) == True:
+        cancel_button = Button(label="Cancel",style=discord.ButtonStyle.red)
+        remove_logs_button = Button(label="Remove all Logs",style=discord.ButtonStyle.red)
+        select = Select(
+            min_values=1,
+            max_values=2,
+            placeholder="Choose what the bot will log",
+            options=[
+                discord.SelectOption(
+                    label="Deleted Messages",
+                    description="The bot will log when a user deletes a message."
+                ),
+                discord.SelectOption(
+                    label="Placeholder",
+                    description="Placeholder"
+                )
+            ],
+            row=2
+        )
+        view = View()
+        view.add_item(select)
+        view.add_item(cancel_button)
+        view.add_item(remove_logs_button)
+        await ctx.message.delete()
+        # embed = discord.Embed(title=f"Select what the bot will log",color=16776960)
+        originalmsg = await ctx.send(ctx.message.author.mention,view=view)
+
+        async def cancel_callback(interaction):
+            if interaction.user.id == ctx.message.author.id:
+                await originalmsg.delete()
+                cancelEmbed = discord.Embed(title="Action Cancelled",color=15548997)
+                await ctx.send(embed=cancelEmbed,delete_after=10)
+            else:
+                await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
+
+        async def remove_logs_callback(interaction):
+            if interaction.user.id == ctx.message.author.id:
+                await originalmsg.delete()
+                cancelEmbed = discord.Embed(title="Action Cancelled",color=15548997)
+                await ctx.send(embed=cancelEmbed,delete_after=10)
+            else:
+                await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
+
+        async def select_callback(interaction):
+            if interaction.user.id == ctx.message.author.id:
+                await originalmsg.delete()
+                jsonstore = open("guilddata.json")
+                f = json.load(jsonstore)
+                foundguild = False
+                for item in f:
+                    if item.get("guildID") == ctx.guild.id:
+                        with open('guilddata.json','w') as out_file:
+                            item["deleteLogs"] = "Deleted Messages" in select.values
+                            json.dump(f,out_file,indent=4)
+            else:
+                await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
+
+        cancel_button.callback = cancel_callback
+        remove_logs_button.callback = remove_logs_callback
+        select.callback = select_callback
+
 
 #detect deleted message
 @client.event
