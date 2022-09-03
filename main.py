@@ -537,8 +537,8 @@ async def setLogMode(ctx):
         view.add_item(cancel_button)
         view.add_item(remove_logs_button)
         await ctx.message.delete()
-        # embed = discord.Embed(title=f"Select what the bot will log",color=16776960)
-        originalmsg = await ctx.send(ctx.message.author.mention,view=view)
+        embed = discord.Embed(title=f"Select what the bot will log, items not selected will not be logged by the bot",color=8359053)
+        originalmsg = await ctx.send(ctx.message.author.mention,embed=embed,view=view)
 
         async def cancel_callback(interaction):
             if interaction.user.id == ctx.message.author.id:
