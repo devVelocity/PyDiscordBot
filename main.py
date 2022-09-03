@@ -304,7 +304,7 @@ async def sendLog(data):
 
 
 @client.command()
-async def setlog(ctx,*,channel):
+async def setlogchannel(ctx,*,channel):
     if moderatorcheck(ctx.message.author.id) == True:
         jsonstore = open("guilddata.json")
         f = json.load(jsonstore)
@@ -512,7 +512,7 @@ def contains_word(text, word):
     return bool(re.search(r'\b' + re.escape(word) + r'\b', text))
 
 @client.command()
-async def setLogMode(ctx):
+async def setlogmode(ctx):
     if moderatorcheck(ctx.message.author.id) == True:
         cancel_button = Button(label="Cancel",style=discord.ButtonStyle.red)
         remove_logs_button = Button(label="Remove all Logs",style=discord.ButtonStyle.red)
