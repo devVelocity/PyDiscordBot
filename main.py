@@ -526,8 +526,8 @@ async def setLogMode(ctx):
                     description="The bot will log when a user deletes a message."
                 ),
                 discord.SelectOption(
-                    label="Placeholder",
-                    description="Placeholder"
+                    label="⠀",
+                    description="⠀"
                 )
             ],
             row=2
