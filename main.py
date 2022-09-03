@@ -561,7 +561,7 @@ async def setLogMode(ctx):
                             json.dump(f,out_file,indent=4)
 
                 await ctx.send(ctx.message.author.mention,embed=cancelEmbed,delete_after=10)
-                await sendLog({"guildid":ctx.guild.id,"logtitle":f"The bot will now no longer log anything.","ranby":ctx.message.author.id,"channel":ctx.message.channel.id})                    
+                await sendLog({"guildid":ctx.guild.id,"logtitle":f"The bot will now no longer log anything.","ranby":ctx.message.author.id,"channel":ctx.message.channel.id,"colour":15548997})                    
             else:
                 await interaction.response.send_message("Sorry, you do not have access to this button",ephemeral=True)
 
