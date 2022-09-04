@@ -402,16 +402,24 @@ async def on_member_join(member):
     for item in f:
         if item.get("guildID") == member.guild.id:
             if item.get("joinLeaveLogs") == True:
-                await sendLog({"guildid":member.guild.id,"logtitle":f"{member.id} has joined the server","colour":5763719})                     
+                await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has joined the server","colour":5763719})                     
 
 @client.event
-async def on_member_leave(member):
+async def on_member_remove(member):
     jsonstore = open("guilddata.json")
     f = json.load(jsonstore)
     for item in f:
         if item.get("guildID") == member.guild.id:
             if item.get("joinLeaveLogs") == True:
-                await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":15548997})     
+                try:
+                    banned = await member.guild.fetch_ban(member)
+                except discord.NotFound:
+                    banned = False
+                if banned:
+                    await sendLog({"guildid":member.guild.id,"logtitle":f"{member} was just banned from the server","colour":15548997})     
+                else:
+                    await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":15548997})     
+  
 
 @client.command()
 async def setup(ctx):
