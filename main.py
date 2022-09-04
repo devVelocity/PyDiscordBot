@@ -420,6 +420,7 @@ async def setup(ctx):
                             "words":[],
                             "mods":[ctx.message.guild.owner_id],
                             "deleteLogs": False,
+                            "joinLeaveLogs":False,
                             "logsChannel":0
                         }
                     )
