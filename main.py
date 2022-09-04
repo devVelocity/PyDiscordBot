@@ -292,8 +292,10 @@ async def sendLog(data):
                 getuser = client.get_user(data.get("ranby"))
                 embed.add_field(name="Command ran by:",value=getuser.mention)
 
-            getchannel = client.get_channel(data.get("channel"))
-            embed.add_field(name="In:",value=getchannel.mention)
+            if data.get("channel"):
+                getchannel = client.get_channel(data.get("channel"))
+                embed.add_field(name="In:",value=getchannel.mention)
+
             if data.get("reason"):
                 embed.add_field(name="Reason",value=data["reason"],inline=False)
             
@@ -400,7 +402,7 @@ async def on_member_join(member):
     for item in f:
         if item.get("guildID") == member.guild.id:
             if item.get("joinLeaveLogs") == True:
-                await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has joined the server","colour":5763719})                     
+                await sendLog({"guildid":member.guild.id,"logtitle":f"{member.id} has joined the server","colour":5763719})                     
 
 @client.event
 async def on_member_leave(member):
@@ -409,7 +411,7 @@ async def on_member_leave(member):
     for item in f:
         if item.get("guildID") == member.guild.id:
             if item.get("joinLeaveLogs") == True:
-                await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":5763719})     
+                await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":15548997})     
 
 @client.command()
 async def setup(ctx):
