@@ -18,8 +18,6 @@ intents.members = True
 client = commands.Bot(command_prefix=".",intents=intents)
 # client.remove_command('help')
 
-# TODO - add todo shit here
-
 
 def moderatorcheck(modid):
     jsonstore = open("guilddata.json")
@@ -554,8 +552,8 @@ async def setlogmode(ctx):
                     description="The bot will log when a user deletes a message."
                 ),
                 discord.SelectOption(
-                    label="⠀",
-                    description="⠀"
+                    label="Join/Leave",
+                    description="The bot will log when a user joins or leaves, and includes when a user is banned not using bot commands"
                 )
             ],
             row=2
@@ -602,6 +600,7 @@ async def setlogmode(ctx):
                     if item.get("guildID") == ctx.guild.id:
                         with open('guilddata.json','w') as out_file:
                             item["deleteLogs"] = "Deleted Messages" in select.values
+                            item["joinLeaveLogs"] = "Join/Leave" in select.values
                             json.dump(f,out_file,indent=4)
 
                 embed = discord.Embed(title="Success!",description="The following items will be now logged by the bot",color=5763719)
