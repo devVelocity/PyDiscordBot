@@ -416,8 +416,8 @@ async def on_member_remove(member):
                 except discord.NotFound:
                     banned = False
                 if banned:
-                    reason = await member.guild.fetch_ban(member).reason
-                    await sendLog({"guildid":member.guild.id,"logtitle":f"{member} was just banned from the server","reason":reason,"colour":15548997})     
+                    reason = await member.guild.fetch_ban(member)
+                    await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server (banned)","reason":banned.reason,"colour":15548997})     
                 else:
                     await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":15548997})     
   
