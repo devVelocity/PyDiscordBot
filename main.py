@@ -18,8 +18,6 @@ intents.members = True
 client = commands.Bot(command_prefix=".",intents=intents)
 # client.remove_command('help')
 
-# TODO - add todo shit here
-
 
 def moderatorcheck(modid):
     jsonstore = open("guilddata.json")
@@ -292,8 +290,10 @@ async def sendLog(data):
                 getuser = client.get_user(data.get("ranby"))
                 embed.add_field(name="Command ran by:",value=getuser.mention)
 
-            getchannel = client.get_channel(data.get("channel"))
-            embed.add_field(name="In:",value=getchannel.mention)
+            if data.get("channel"):
+                getchannel = client.get_channel(data.get("channel"))
+                embed.add_field(name="In:",value=getchannel.mention)
+
             if data.get("reason"):
                 embed.add_field(name="Reason",value=data["reason"],inline=False)
             
@@ -393,7 +393,32 @@ async def removebanword(ctx, word):
                 return
         ctx.message.delete()
 
+@client.event
+async def on_member_join(member):
+    jsonstore = open("guilddata.json")
+    f = json.load(jsonstore)
+    for item in f:
+        if item.get("guildID") == member.guild.id:
+            if item.get("joinLeaveLogs") == True:
+                await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has joined the server","colour":5763719})                     
 
+@client.event
+async def on_member_remove(member):
+    jsonstore = open("guilddata.json")
+    f = json.load(jsonstore)
+    for item in f:
+        if item.get("guildID") == member.guild.id:
+            if item.get("joinLeaveLogs") == True:
+                try:
+                    banned = await member.guild.fetch_ban(member)
+                except discord.NotFound:
+                    banned = False
+                if banned:
+                    reason = await member.guild.fetch_ban(member)
+                    await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server (banned)","reason":banned.reason,"colour":15548997})     
+                else:
+                    await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":15548997})     
+  
 
 @client.command()
 async def setup(ctx):
@@ -420,6 +445,7 @@ async def setup(ctx):
                             "words":[],
                             "mods":[ctx.message.guild.owner_id],
                             "deleteLogs": False,
+                            "joinLeaveLogs":False,
                             "logsChannel":0
                         }
                     )
@@ -526,8 +552,8 @@ async def setlogmode(ctx):
                     description="The bot will log when a user deletes a message."
                 ),
                 discord.SelectOption(
-                    label="⠀",
-                    description="⠀"
+                    label="Join/Leave",
+                    description="The bot will log when a user joins or leaves, and includes when a user is banned not using bot commands"
                 )
             ],
             row=2
@@ -574,6 +600,7 @@ async def setlogmode(ctx):
                     if item.get("guildID") == ctx.guild.id:
                         with open('guilddata.json','w') as out_file:
                             item["deleteLogs"] = "Deleted Messages" in select.values
+                            item["joinLeaveLogs"] = "Join/Leave" in select.values
                             json.dump(f,out_file,indent=4)
 
                 embed = discord.Embed(title="Success!",description="The following items will be now logged by the bot",color=5763719)
