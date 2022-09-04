@@ -393,7 +393,21 @@ async def removebanword(ctx, word):
                 return
         ctx.message.delete()
 
+@client.event
+async def on_member_join(member):
+    jsonstore = open("guilddata.json")
+    f = json.load(jsonstore)
+    for item in f:
+        if item.get("guildID") == member.guild.id:
+            await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has been joined the server","colour":5763719})                     
 
+@client.event
+async def on_member_leave(member):
+    jsonstore = open("guilddata.json")
+    f = json.load(jsonstore)
+    for item in f:
+        if item.get("guildID") == member.guild.id:
+            await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":5763719})     
 
 @client.command()
 async def setup(ctx):
