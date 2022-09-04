@@ -399,7 +399,8 @@ async def on_member_join(member):
     f = json.load(jsonstore)
     for item in f:
         if item.get("guildID") == member.guild.id:
-            await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has been joined the server","colour":5763719})                     
+            if item.get("joinLeaveLogs") == True:
+                await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has joined the server","colour":5763719})                     
 
 @client.event
 async def on_member_leave(member):
@@ -407,7 +408,8 @@ async def on_member_leave(member):
     f = json.load(jsonstore)
     for item in f:
         if item.get("guildID") == member.guild.id:
-            await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":5763719})     
+            if item.get("joinLeaveLogs") == True:
+                await sendLog({"guildid":member.guild.id,"logtitle":f"{member} has left the server","colour":5763719})     
 
 @client.command()
 async def setup(ctx):
