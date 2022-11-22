@@ -2,7 +2,7 @@
 
 ## Description
 
-Code for a Discord bot with basic features. Uses JSON to store data about guilds.
+Code for a Discord bot with basic features. Uses JSON to store data about guilds, if you require it to work with a Database then it will need to be modified.
 
 ## Contributions
 
